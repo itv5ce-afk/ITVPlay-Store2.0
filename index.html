@@ -258,6 +258,67 @@
             cursor: pointer;
             align-self: flex-start;
             box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- SUB-ABA INTERNA PARA CONTROLAR O LOGO --- */
+        .sub-panel-box {
+            background-color: #131926;
+            border: 1px solid #3b82f6;
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        .sub-panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sub-add {
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-sub-save {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .logo-preview-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #1a2035;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .logo-preview-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 50%;
+            background-color: #0b0d13;
         }
 
         /* Formulários */
@@ -338,6 +399,20 @@
             gap: 10px;
             color: #fff;
             font-weight: 600;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .panel-app-left span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .panel-app-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .panel-mini-thumb {
@@ -345,6 +420,18 @@
             height: 35px;
             border-radius: 6px;
             object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         .btn-delete {
@@ -389,7 +476,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // Configuração do Firebase
@@ -407,10 +494,14 @@
         const auth = getAuth(app);
         const appsCollection = collection(db, "aplicativos");
 
-        // Variável de controle de sessão ativa (Proteção contra injeções JS)
+        // Variável de controle estrito em memória para evitar fraudes via console javascript
         let isAdminAuthenticated = false;
 
-        // Monitor de Autenticação com regras de interface estritas
+        // Estado do aplicativo selecionado para Edição
+        let idAppEditando = null;
+        let imagemAtualBase64 = null;
+
+        // Monitor de Autenticação do Firebase
         onAuthStateChanged(auth, (user) => {
             const btnAuth = document.getElementById('btnAuthTop');
             const containerLogout = document.getElementById('logoutContainer');
@@ -429,10 +520,12 @@
                 
                 document.getElementById('authSection').style.display = "flex";
                 document.getElementById('adminSection').style.display = "none";
+                fecharAbaLogo();
+                cancelarEdicao();
             }
         });
 
-        // Escuta em tempo real da lista de aplicativos públicos
+        // Escuta atualizações do banco de dados (Lista de Aplicativos)
         onSnapshot(appsCollection, (snapshot) => {
             const listaApps = [];
             snapshot.forEach((doc) => {
@@ -442,11 +535,23 @@
             renderizarPainel(listaApps);
         });
 
+        // NOVA REGRA SEGURA: Escuta em tempo real o Logotipo vindo direto da nuvem do Firebase
+        const mainLogoImg = document.getElementById('mainLogoImg');
+        const previewLogoImg = document.getElementById('previewLogoImg');
+        
+        onSnapshot(doc(db, "configuracoes", "layout"), (docSnap) => {
+            if (docSnap.exists() && docSnap.data().logoPrincipal) {
+                const logoOnline = docSnap.data().logoPrincipal;
+                mainLogoImg.src = logoOnline;
+                previewLogoImg.src = logoOnline;
+            }
+        });
+
         window.togglePainel = function(show) {
             document.getElementById('panelTab').style.display = show ? 'flex' : 'none';
         }
 
-        // Login Seguro
+        // Login Seguro com tratamento antifraude
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('authEmail').value;
@@ -456,7 +561,7 @@
                 await signInWithEmailAndPassword(auth, email, senha);
                 alert('Autenticação bem-sucedida! Acesso liberado.');
             } catch (erro) {
-                alert('Acesso negado: Credenciais incorretas.');
+                alert('Acesso negado: Credenciais inválidas.');
             }
         });
 
@@ -505,35 +610,73 @@
                             <img class="panel-mini-thumb" src="${app.imagem}">
                             <span>${app.nome}</span>
                         </div>
-                        <button class="btn-delete" id="btn-del-${app.id}">Remover</button>
+                        <div class="panel-app-actions">
+                            <button class="btn-edit" id="btn-edit-${app.id}">Editar</button>
+                            <button class="btn-delete" id="btn-del-${app.id}">Remover</button>
+                        </div>
                     </div>
                 `;
             });
 
             apps.forEach(app => {
+                // Evento Remover
                 document.getElementById(`btn-del-${app.id}`).addEventListener('click', async () => {
-                    // SEGUNDA CAMADA DE PROTEÇÃO FRONTE-END: Impede disparos maliciosos por console
                     if (!isAdminAuthenticated) {
-                        alert("Operação bloqueada: Acesso não autorizado.");
+                        alert("Operação bloqueada: Autenticação ausente.");
                         return;
                     }
                     if(confirm(`Deseja deletar permanentemente "${app.nome}" do banco de dados?`)) {
                         try {
+                            if(idAppEditando === app.id) cancelarEdicao();
                             await deleteDoc(doc(db, "aplicativos", app.id));
                         } catch (err) {
-                            alert("Falha de permissão no Firebase ao deletar.");
+                            alert("Erro de permissão no Firebase ao excluir documento.");
                         }
                     }
+                });
+
+                // Evento Carregar para Edição
+                document.getElementById(`btn-edit-${app.id}`).addEventListener('click', () => {
+                    if (!isAdminAuthenticated) {
+                        alert("Operação bloqueada: Autenticação ausente.");
+                        return;
+                    }
+                    
+                    idAppEditando = app.id;
+                    imagemAtualBase64 = app.imagem;
+                    
+                    document.getElementById('formTitle').innerText = "Editar Aplicativo no Firebase";
+                    document.getElementById('appName').value = app.nome;
+                    document.getElementById('appDev').value = app.dev;
+                    document.getElementById('appUrl').value = app.url;
+                    
+                    document.getElementById('appIconFile').required = false; // Não obrigatório ao editar
+                    document.getElementById('btnSubmitApp').innerText = "Salvar Alterações na Nuvem";
+                    document.getElementById('btnCancelEdit').style.display = "inline-block";
+                    
+                    // Rola a tela suavemente de volta para o formulário
+                    document.getElementById('appForm').scrollIntoView({ behavior: 'smooth' });
                 });
             });
         }
 
-        // Gravação Segura de novos Apps
+        // Função para cancelar o modo de edição
+        window.cancelarEdicao = function() {
+            idAppEditando = null;
+            imagemAtualBase64 = null;
+            document.getElementById('appForm').reset();
+            document.getElementById('formTitle').innerText = "Postar via Firebase Cloud";
+            document.getElementById('appIconFile').required = true;
+            document.getElementById('btnSubmitApp').innerText = "Enviar para Nuvem Firebase";
+            document.getElementById('btnCancelEdit').style.display = "none";
+        }
+
+        // Gravação / Atualização protegida e higienizada de Aplicativos
         document.getElementById('appForm').addEventListener('submit', async (event) => {
             event.preventDefault();
 
             if (!isAdminAuthenticated) {
-                alert("Erro crítico: Você não tem permissão para realizar envios.");
+                alert("Erro de segurança: Acesso restrito.");
                 return;
             }
 
@@ -542,53 +685,113 @@
             const urlInput = document.getElementById('appUrl').value;
             const arquivoFoto = document.getElementById('appIconFile').files[0];
 
-            if (arquivoFoto) {
-                const leitor = new FileReader();
-                leitor.onload = async function(e) {
-                    const imagemBase64 = e.target.result;
-                    try {
+            const salvarDados = async (imagemFinal) => {
+                try {
+                    if (idAppEditando) {
+                        // Modo Edição: Atualiza documento existente
+                        await updateDoc(doc(db, "aplicativos", idAppEditando), {
+                            nome: nome,
+                            dev: dev,
+                            url: urlInput,
+                            imagem: imagemFinal,
+                            atualizadoEm: new Date().toISOString()
+                        });
+                        alert('Aplicativo atualizado com sucesso!');
+                        cancelarEdicao();
+                    } else {
+                        // Modo Criação: Adiciona novo documento
                         await addDoc(appsCollection, {
                             nome: nome,
                             dev: dev,
                             url: urlInput,
-                            imagem: imagemBase64,
+                            imagem: imagemFinal,
                             criadoEm: new Date().toISOString()
                         });
                         document.getElementById('appForm').reset();
                         alert('Aplicativo publicado na nuvem com sucesso!');
-                    } catch (erro) {
-                        alert('Invasão/Fraude bloqueada pelas regras do Firebase: ' + erro.message);
                     }
+                } catch (erro) {
+                    alert('Tentativa inválida bloqueada pelas regras do Firebase: ' + erro.message);
+                }
+            };
+
+            if (arquivoFoto) {
+                const leitor = new FileReader();
+                leitor.onload = function(e) {
+                    salvarDados(e.target.result);
                 };
                 leitor.readAsDataURL(arquivoFoto);
+            } else if (idAppEditando && imagemAtualBase64) {
+                // Se está editando e não enviou uma nova foto, mantém a atual
+                salvarDados(imagemAtualBase64);
+            } else {
+                alert("Por favor, selecione um ícone para o aplicativo.");
             }
         });
 
-        // Controle Seguro de Upload do Logo
+        // --- CONTROLE DE SEGURANÇA E FLUXO DA ABA "FIXAR LOGO" ---
         const inputLogo = document.getElementById('logoFileInput');
-        const mainLogoImg = document.getElementById('mainLogoImg');
-        const logoSalvo = localStorage.getItem('itv_custom_logo');
-        if (logoSalvo) mainLogoImg.src = logoSalvo;
+        const boxSubPanel = document.getElementById('abaLogoContainer');
+        let imagemTemporariaBase64 = null; 
 
-        window.triggerLogoUpload = function() { 
+        // Abre a aba interna de gerenciamento do Logo
+        window.abrirAbaLogo = function() {
             if (!isAdminAuthenticated) return;
-            inputLogo.click(); 
+            boxSubPanel.style.display = "flex";
         }
-        
+
+        // Fecha a aba interna
+        window.fecharAbaLogo = function() {
+            boxSubPanel.style.display = "none";
+            imagemTemporariaBase64 = null;
+            previewLogoImg.src = mainLogoImg.src;
+        }
+
+        // Ação do Botão: Add Logo (Abre a galeria com proteção de estado)
+        window.triggerAddLogo = function() {
+            if (!isAdminAuthenticated) return;
+            inputLogo.click();
+        }
+
+        // Detecta imagem selecionada na galeria
         inputLogo.addEventListener('change', function() {
             if (!isAdminAuthenticated) return;
             const arquivo = this.files[0];
             if (arquivo) {
                 const leitor = new FileReader();
                 leitor.onload = function(e) {
-                    const base64Logo = e.target.result;
-                    mainLogoImg.src = base64Logo;
-                    localStorage.setItem('itv_custom_logo', base64Logo);
-                    alert('Logotipo principal atualizado!');
+                    imagemTemporariaBase64 = e.target.result;
+                    previewLogoImg.src = imagemTemporariaBase64; 
                 };
                 leitor.readAsDataURL(arquivo);
             }
         });
+
+        // Ação do Botão: Salvar (Grava na nuvem de forma definitiva e segura)
+        window.salvarNovoLogo = async function() {
+            if (!isAdminAuthenticated) {
+                alert("Ação negada: Você não possui privilégios de gravação.");
+                return;
+            }
+            
+            if (!imagemTemporariaBase64) {
+                alert("Selecione uma imagem da galeria tocando em 'Add Logo' primeiro.");
+                return;
+            }
+
+            try {
+                // Grava com segurança diretamente no banco de dados online do Firebase
+                await setDoc(doc(db, "configuracoes", "layout"), {
+                    logoPrincipal: imagemTemporariaBase64,
+                    atualizadoEm: new Date().toISOString()
+                });
+                
+                alert('✓ Logotipo salvo e FIXADO na nuvem com sucesso!');
+                fecharAbaLogo();
+            } catch (erro) {
+                alert('Erro de segurança ao tentar salvar o logo: ' + erro.message);
+            }
+        }
     </script>
 </head>
 <body>
@@ -596,7 +799,7 @@
     <header>
         <div class="header-left">
             <div class="logo-box">
-                <img class="logo-img" id="mainLogoImg" src="data:image/png;base64,IMAGEM_EMBUTIDA_NO_ARQUIVO_BAIXADO" alt="ITV Logo">
+                <img class="logo-img" id="mainLogoImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="ITV Logo">
             </div>
             <div class="brand-text-container">
                 <h1 class="brand-title">ITV</h1>
@@ -653,14 +856,32 @@
         </div>
 
         <div id="adminSection" style="display: none;">
-            <div style="margin-bottom: 25px;">
-                <p style="color: #22c55e; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px;">✓ Autenticação de Segurança Ativa</p>
-                <button class="btn-change-logo" onclick="triggerLogoUpload()">🖼️ Mudar LOGO Principal</button>
+            <div style="margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px;">
+                <p style="color: #22c55e; font-size: 0.9rem; font-weight: bold;">✓ Autenticação de Segurança Ativa</p>
+                
+                <button class="btn-change-logo" onclick="abrirAbaLogo()">🖼️ FIXAR LOGO</button>
                 <input type="file" id="logoFileInput" accept="image/*" style="display: none;">
             </div>
 
+            <div class="sub-panel-box" id="abaLogoContainer">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="color: #38bdf8; font-size: 1rem;">Configurar Logotipo Principal</h4>
+                    <span style="cursor:pointer; color:#ef4444; font-weight:bold; font-size:1.1rem;" onclick="fecharAbaLogo()">✕</span>
+                </div>
+                
+                <div class="logo-preview-container">
+                    <img class="logo-preview-img" id="previewLogoImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Previa">
+                    <span style="color: #94a3b8; font-size: 0.8rem;">Visualização do logotipo selecionado</span>
+                </div>
+
+                <div class="sub-panel-actions">
+                    <button class="btn-sub-add" onclick="triggerAddLogo()">+ Add Logo</button>
+                    <button class="btn-sub-save" onclick="salvarNovoLogo()">Salvar</button>
+                </div>
+            </div>
+
             <form class="panel-form" id="appForm">
-                <h3 style="color: #fff; margin-bottom: 5px;">Postar via Firebase Cloud</h3>
+                <h3 style="color: #fff; margin-bottom: 5px;" id="formTitle">Postar via Firebase Cloud</h3>
                 
                 <div class="form-group">
                     <label>Nome do Aplicativo</label>
@@ -682,7 +903,10 @@
                     <input type="url" id="appUrl" placeholder="https://exemplo.com/app.apk" required>
                 </div>
 
-                <button type="submit" class="btn-submit-app">Enviar para Nuvem Firebase</button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-submit-app" id="btnSubmitApp" style="flex: 1;">Enviar para Nuvem Firebase</button>
+                    <button type="button" class="btn-close-panel" id="btnCancelEdit" onclick="cancelarEdicao()" style="display: none; background-color: #ef4444;">Cancelar</button>
+                </div>
             </form>
 
             <h3 style="color: #fff; margin-bottom: 12px;">Gerenciar Banco de Dados</h3>
