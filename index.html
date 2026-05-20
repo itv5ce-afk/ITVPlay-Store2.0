@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITV Play Store</title>
+    <style>
+        /* Configurações Gerais - Tema Super Escuro */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0b0d13;
+            color: #f1f5f9;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* --- CABEÇALHO --- */
+        header {
+            background: linear-gradient(180deg, #121620 0%, #0b0d13 100%);
+            padding: 25px 16px;
+            border-bottom: 1px solid #1e2640;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-box {
+            position: relative;
+            width: 75px;
+            height: 75px;
+            flex-shrink: 0;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+            background-color: #1a2035;
+        }
+
+        .brand-text-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ffffff 0%, #ff3333 50%, #ff0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .brand-subtitle {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #38bdf8;
+            margin-top: 4px;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-auth-top {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Barra de Pesquisa */
+        .search-box {
+            background-color: #1a2035;
+            margin: 16px;
+            padding: 14px 20px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            border: 1px solid #2a3454;
+        }
+
+        /* --- LISTAGEM DE APPS VERTICAIS --- */
+        .store-container {
+            padding: 0 16px;
+        }
+
+        .category-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 24px 0 14px 0;
+            color: #ffffff;
+            border-left: 4px solid #ff0000;
+            padding-left: 10px;
+        }
+
+        .apps-vertical-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .app-item {
+            background-color: #131926;
+            border: 1px solid #20293a;
+            border-radius: 18px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .app-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            background-color: #1a2035;
+        }
+
+        .app-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex-grow: 1;
+            margin-left: 14px;
+        }
+
+        .app-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .app-dev {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .app-stats {
+            font-size: 0.75rem;
+            color: #f59e0b;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+            color: #ffffff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* --- ABA DO PAINEL DE GERENCIAMENTO --- */
+        .panel-tab {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0b0d13;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-header-block {
+            border-bottom: 1px solid #20293a;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .btn-close-panel {
+            background-color: #20293a;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-change-logo {
+            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            align-self: flex-start;
+            box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2);
+        }
+
+        /* Formulários */
+        .panel-form {
+            background-color: #131926;
+            border: 1px solid #20293a;
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            background-color: #1a2035;
+            border: 1px solid #2a3454;
+            padding: 12px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .btn-submit-app {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-submit-auth {
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .panel-app-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-app-item {
+            background-color: #1a2035;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #2a3454;
+        }
+
+        .panel-app-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .panel-mini-thumb {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .btn-delete {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-bar-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 68px;
+            background-color: #121620;
+            border-top: 1px solid #20293a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+
+        .nav-link.current {
+            color: #38bdf8;
+        }
+    </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBufLcEOdK6k5Qc-a2RD6Rs3Hgki0KlJ9A",
+            authDomain: "itv-play-store.firebaseapp.com",
+            projectId: "itv-play-store",
+            storageBucket: "itv-play-store.firebasestorage.app",
+            messagingSenderId: "893350666821",
+            appId: "1:893350666821:web:aa1f74af187c7c02f7b92c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appsCollection = collection(db, "aplicativos");
+
+        // Variável de controle de sessão ativa (Proteção contra injeções JS)
+        let isAdminAuthenticated = false;
+
+        // Monitor de Autenticação com regras de interface estritas
+        onAuthStateChanged(auth, (user) => {
+            const btnAuth = document.getElementById('btnAuthTop');
+            const containerLogout = document.getElementById('logoutContainer');
+            
+            if (user) {
+                isAdminAuthenticated = true;
+                btnAuth.innerText = "PAINEL";
+                containerLogout.style.display = "block";
+                
+                document.getElementById('authSection').style.display = "none";
+                document.getElementById('adminSection').style.display = "block";
+            } else {
+                isAdminAuthenticated = false;
+                btnAuth.innerText = "LOGIN";
+                containerLogout.style.display = "none";
+                
+                document.getElementById('authSection').style.display = "flex";
+                document.getElementById('adminSection').style.display = "none";
+            }
+        });
+
+        // Escuta em tempo real da lista de aplicativos públicos
+        onSnapshot(appsCollection, (snapshot) => {
+            const listaApps = [];
+            snapshot.forEach((doc) => {
+                listaApps.push({ id: doc.id, ...doc.data() });
+            });
+            renderizarLoja(listaApps);
+            renderizarPainel(listaApps);
+        });
+
+        window.togglePainel = function(show) {
+            document.getElementById('panelTab').style.display = show ? 'flex' : 'none';
+        }
+
+        // Login Seguro
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const senha = document.getElementById('authPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, senha);
+                alert('Autenticação bem-sucedida! Acesso liberado.');
+            } catch (erro) {
+                alert('Acesso negado: Credenciais incorretas.');
+            }
+        });
+
+        // Logout Seguro
+        window.deslogarUsuario = async function() {
+            if(confirm("Deseja fechar a sessão de administrador?")) {
+                await signOut(auth);
+                togglePainel(false);
+            }
+        }
+
+        function renderizarLoja(apps) {
+            const container = document.getElementById('mainAppList');
+            container.innerHTML = '';
+            
+            if(apps.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8; text-align:center; margin-top:20px;">Nenhum app disponível no momento.</p>';
+                return;
+            }
+
+            apps.forEach(app => {
+                container.innerHTML += `
+                    <div class="app-item">
+                        <div class="app-left-content" style="display: flex; align-items: center; flex-grow:1;">
+                            <img class="app-thumbnail" src="${app.imagem}" alt="Ícone">
+                            <div class="app-meta">
+                                <span class="app-title">${app.nome}</span>
+                                <span class="app-dev">${app.dev}</span>
+                                <span class="app-stats">⭐ 5.0 • Verificado</span>
+                            </div>
+                        </div>
+                        <button class="action-button" onclick="window.open('${app.url}', '_blank')">Instalar</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderizarPainel(apps) {
+            const container = document.getElementById('panelAppList');
+            container.innerHTML = '';
+
+            apps.forEach(app => {
+                container.innerHTML += `
+                    <div class="panel-app-item">
+                        <div class="panel-app-left">
+                            <img class="panel-mini-thumb" src="${app.imagem}">
+                            <span>${app.nome}</span>
+                        </div>
+                        <button class="btn-delete" id="btn-del-${app.id}">Remover</button>
+                    </div>
+                `;
+            });
+
+            apps.forEach(app => {
+                document.getElementById(`btn-del-${app.id}`).addEventListener('click', async () => {
+                    // SEGUNDA CAMADA DE PROTEÇÃO FRONTE-END: Impede disparos maliciosos por console
+                    if (!isAdminAuthenticated) {
+                        alert("Operação bloqueada: Acesso não autorizado.");
+                        return;
+                    }
+                    if(confirm(`Deseja deletar permanentemente "${app.nome}" do banco de dados?`)) {
+                        try {
+                            await deleteDoc(doc(db, "aplicativos", app.id));
+                        } catch (err) {
+                            alert("Falha de permissão no Firebase ao deletar.");
+                        }
+                    }
+                });
+            });
+        }
+
+        // Gravação Segura de novos Apps
+        document.getElementById('appForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!isAdminAuthenticated) {
+                alert("Erro crítico: Você não tem permissão para realizar envios.");
+                return;
+            }
+
+            const nome = document.getElementById('appName').value;
+            const dev = document.getElementById('appDev').value;
+            const urlInput = document.getElementById('appUrl').value;
+            const arquivoFoto = document.getElementById('appIconFile').files[0];
+
+            if (arquivoFoto) {
+                const leitor = new FileReader();
+                leitor.onload = async function(e) {
+                    const imagemBase64 = e.target.result;
+                    try {
+                        await addDoc(appsCollection, {
+                            nome: nome,
+                            dev: dev,
+                            url: urlInput,
+                            imagem: imagemBase64,
+                            criadoEm: new Date().toISOString()
+                        });
+                        document.getElementById('appForm').reset();
+                        alert('Aplicativo publicado na nuvem com sucesso!');
+                    } catch (erro) {
+                        alert('Invasão/Fraude bloqueada pelas regras do Firebase: ' + erro.message);
+                    }
+                };
+                leitor.readAsDataURL(arquivoFoto);
+            }
+        });
+
+        // Controle Seguro de Upload do Logo
+        const inputLogo = document.getElementById('logoFileInput');
+        const mainLogoImg = document.getElementById('mainLogoImg');
+        const logoSalvo = localStorage.getItem('itv_custom_logo');
+        if (logoSalvo) mainLogoImg.src = logoSalvo;
+
+        window.triggerLogoUpload = function() { 
+            if (!isAdminAuthenticated) return;
+            inputLogo.click(); 
+        }
+        
+        inputLogo.addEventListener('change', function() {
+            if (!isAdminAuthenticated) return;
+            const arquivo = this.files[0];
+            if (arquivo) {
+                const leitor = new FileReader();
+                leitor.onload = function(e) {
+                    const base64Logo = e.target.result;
+                    mainLogoImg.src = base64Logo;
+                    localStorage.setItem('itv_custom_logo', base64Logo);
+                    alert('Logotipo principal atualizado!');
+                };
+                leitor.readAsDataURL(arquivo);
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <div class="logo-box">
+                <img class="logo-img" id="mainLogoImg" src="data:image/png;base64,IMAGEM_EMBUTIDA_NO_ARQUIVO_BAIXADO" alt="ITV Logo">
+            </div>
+            <div class="brand-text-container">
+                <h1 class="brand-title">ITV</h1>
+                <div class="brand-subtitle">Play Store</div>
+            </div>
+        </div>
+        
+        <div class="header-actions">
+            <button class="btn-auth-top" id="btnAuthTop" onclick="togglePainel(true)">LOGIN</button>
+            <div id="logoutContainer" style="display: none;">
+                <button class="btn-logout" onclick="deslogarUsuario()">✕</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="search-box">
+        <span>🔍 Buscar aplicativos verificados...</span>
+    </div>
+
+    <main class="store-container">
+        <div class="category-header">
+            <h2>Seus Aplicativos Publicados</h2>
+        </div>
+        <div class="apps-vertical-stack" id="mainAppList">
+            </div>
+    </main>
+
+    <div class="panel-tab" id="panelTab">
+        
+        <div class="panel-header-block">
+            <div class="panel-header-top">
+                <h2 class="panel-title">Painel Seguro ITV</h2>
+                <button class="btn-close-panel" onclick="togglePainel(false)">Voltar à Loja</button>
+            </div>
+        </div>
+
+        <div id="authSection" style="display: flex; flex-direction: column; gap: 15px;">
+            <form class="panel-form" id="loginForm">
+                <h3 style="color: #fff; margin-bottom: 5px;">Área Restrita</h3>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px;">Autentique-se para liberar os privilégios de gravação.</p>
+                
+                <div class="form-group">
+                    <label>E-mail Administrativo</label>
+                    <input type="email" id="authEmail" placeholder="seu-email@itv.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Senha Antifraude</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-submit-auth">Desbloquear Painel</button>
+            </form>
+        </div>
+
+        <div id="adminSection" style="display: none;">
+            <div style="margin-bottom: 25px;">
+                <p style="color: #22c55e; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px;">✓ Autenticação de Segurança Ativa</p>
+                <button class="btn-change-logo" onclick="triggerLogoUpload()">🖼️ Mudar LOGO Principal</button>
+                <input type="file" id="logoFileInput" accept="image/*" style="display: none;">
+            </div>
+
+            <form class="panel-form" id="appForm">
+                <h3 style="color: #fff; margin-bottom: 5px;">Postar via Firebase Cloud</h3>
+                
+                <div class="form-group">
+                    <label>Nome do Aplicativo</label>
+                    <input type="text" id="appName" placeholder="Ex: ITV Filmes HD" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Desenvolvedor / Empresa</label>
+                    <input type="text" id="appDev" placeholder="Ex: ITV Medias" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Ícone do App (Foto da Galeria)</label>
+                    <input type="file" id="appIconFile" accept="image/*" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Endereço URL de Download/Instalação</label>
+                    <input type="url" id="appUrl" placeholder="https://exemplo.com/app.apk" required>
+                </div>
+
+                <button type="submit" class="btn-submit-app">Enviar para Nuvem Firebase</button>
+            </form>
+
+            <h3 style="color: #fff; margin-bottom: 12px;">Gerenciar Banco de Dados</h3>
+            <div class="panel-app-list" id="panelAppList">
+                </div>
+        </div>
+
+    </div>
+
+    <nav class="nav-bar-bottom">
+        <a href="#" class="nav-link current"><span>📱</span><span>Apps</span></a>
+        <a href="#" class="nav-link"><span>🎮</span><span>Jogos</span></a>
+        <a href="#" class="nav-link" onclick="togglePainel(true)"><span>⚙️</span><span>Painel</span></a>
+    </nav>
+
+</body>
+</html>
