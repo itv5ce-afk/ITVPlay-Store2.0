@@ -1,638 +1,926 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITV Clientes 2.0</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <title>ITV Play Store</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; }
-        .navbar { background-color: #111; border-bottom: 1px solid #333; position: relative; }
-        .card-cliente { background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; margin-bottom: 10px; padding: 15px; }
-        .btn-small { font-size: 0.7rem; padding: 5px; flex: 1; margin: 2px; border: none; color: white; }
-        .bg-lilas { background-color: #9933ff !important; color: white; }
-        #adminLock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .menu-lateral { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
-        .menu-lateral a, .menu-lateral label { padding: 8px 32px; text-decoration: none; font-size: 18px; color: #818181; display: block; }
-        
-        /* Estilos Painel Administrativo */
-        .card-financeiro { background: #222; border-left: 4px solid #9933ff; border-radius: 5px; padding: 15px; margin-bottom: 15px; }
-        .stat-val { font-size: 1.5rem; font-weight: bold; color: #00ff00; }
-        .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
+        /* Configurações Gerais - Tema Super Escuro */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* Tela de Login Direta */
-        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 30px; width: 100%; max-width: 400px; }
+        body {
+            background-color: #0b0d13;
+            color: #f1f5f9;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
 
-        /* Botão + fixado no canto superior direito */
-        .btn-add-fixo { position: absolute; top: 10px; right: 15px; background-color: green; color: white; border: none; z-index: 1030; }
-        
-        /* Estilos para botões de renovação */
-        .renew-toggle-btn { min-width: 85px; }
-        .renew-action-btn { min-width: 85px; flex: 1; }
-        .renew-options { display: none; gap: 4px; margin-left: 4px; }
-        .renew-options.show { display: flex !important; }
+        /* --- CABEÇALHO --- */
+        header {
+            background: linear-gradient(180deg, #121620 0%, #0b0d13 100%);
+            padding: 25px 16px;
+            border-bottom: 1px solid #1e2640;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-box {
+            position: relative;
+            width: 75px;
+            height: 75px;
+            flex-shrink: 0;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+            background-color: #1a2035;
+        }
+
+        .brand-text-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ffffff 0%, #ff3333 50%, #ff0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .brand-subtitle {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #38bdf8;
+            margin-top: 4px;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-auth-top {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Barra de Pesquisa */
+        .search-box {
+            background-color: #1a2035;
+            margin: 16px;
+            padding: 14px 20px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            border: 1px solid #2a3454;
+        }
+
+        /* --- LISTAGEM DE APPS VERTICAIS --- */
+        .store-container {
+            padding: 0 16px;
+        }
+
+        .category-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 24px 0 14px 0;
+            color: #ffffff;
+            border-left: 4px solid #ff0000;
+            padding-left: 10px;
+        }
+
+        .apps-vertical-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .app-item {
+            background-color: #131926;
+            border: 1px solid #20293a;
+            border-radius: 18px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .app-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            background-color: #1a2035;
+        }
+
+        .app-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex-grow: 1;
+            margin-left: 14px;
+        }
+
+        .app-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .app-dev {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .app-stats {
+            font-size: 0.75rem;
+            color: #f59e0b;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+            color: #ffffff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        /* --- ABA DO PAINEL DE GERENCIAMENTO --- */
+        .panel-tab {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0b0d13;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-header-block {
+            border-bottom: 1px solid #20293a;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .btn-close-panel {
+            background-color: #20293a;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-change-logo {
+            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            align-self: flex-start;
+            box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- SUB-ABA INTERNA PARA CONTROLAR O LOGO --- */
+        .sub-panel-box {
+            background-color: #131926;
+            border: 1px solid #3b82f6;
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        .sub-panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sub-add {
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-sub-save {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .logo-preview-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #1a2035;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .logo-preview-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 50%;
+            background-color: #0b0d13;
+        }
+
+        /* Formulários */
+        .panel-form {
+            background-color: #131926;
+            border: 1px solid #20293a;
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            background-color: #1a2035;
+            border: 1px solid #2a3454;
+            padding: 12px;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .btn-submit-app {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-submit-auth {
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .panel-app-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-app-item {
+            background-color: #1a2035;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #2a3454;
+        }
+
+        .panel-app-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-weight: 600;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .panel-app-left span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .panel-app-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .panel-mini-thumb {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-bar-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 68px;
+            background-color: #121620;
+            border-top: 1px solid #20293a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+
+        .nav-link.current {
+            color: #38bdf8;
+        }
     </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBufLcEOdK6k5Qc-a2RD6Rs3Hgki0KlJ9A",
+            authDomain: "itv-play-store.firebaseapp.com",
+            projectId: "itv-play-store",
+            storageBucket: "itv-play-store.firebasestorage.app",
+            messagingSenderId: "893350666821",
+            appId: "1:893350666821:web:aa1f74af187c7c02f7b92c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appsCollection = collection(db, "aplicativos");
+
+        // Variável de controle estrito em memória para evitar fraudes via console javascript
+        let isAdminAuthenticated = false;
+
+        // Estado do aplicativo selecionado para Edição
+        let idAppEditando = null;
+        let imagemAtualBase64 = null;
+
+        // Monitor de Autenticação do Firebase
+        onAuthStateChanged(auth, (user) => {
+            const btnAuth = document.getElementById('btnAuthTop');
+            const containerLogout = document.getElementById('logoutContainer');
+            
+            if (user) {
+                isAdminAuthenticated = true;
+                btnAuth.innerText = "PAINEL";
+                containerLogout.style.display = "block";
+                
+                document.getElementById('authSection').style.display = "none";
+                document.getElementById('adminSection').style.display = "block";
+            } else {
+                isAdminAuthenticated = false;
+                btnAuth.innerText = "LOGIN";
+                containerLogout.style.display = "none";
+                
+                document.getElementById('authSection').style.display = "flex";
+                document.getElementById('adminSection').style.display = "none";
+                fecharAbaLogo();
+                cancelarEdicao();
+            }
+        });
+
+        // Escuta atualizações do banco de dados (Lista de Aplicativos)
+        onSnapshot(appsCollection, (snapshot) => {
+            const listaApps = [];
+            snapshot.forEach((doc) => {
+                listaApps.push({ id: doc.id, ...doc.data() });
+            });
+            renderizarLoja(listaApps);
+            renderizarPainel(listaApps);
+        });
+
+        // NOVA REGRA SEGURA: Escuta em tempo real o Logotipo vindo direto da nuvem do Firebase
+        const mainLogoImg = document.getElementById('mainLogoImg');
+        const previewLogoImg = document.getElementById('previewLogoImg');
+        
+        onSnapshot(doc(db, "configuracoes", "layout"), (docSnap) => {
+            if (docSnap.exists() && docSnap.data().logoPrincipal) {
+                const logoOnline = docSnap.data().logoPrincipal;
+                mainLogoImg.src = logoOnline;
+                previewLogoImg.src = logoOnline;
+            }
+        });
+
+        window.togglePainel = function(show) {
+            document.getElementById('panelTab').style.display = show ? 'flex' : 'none';
+        }
+
+        // Login Seguro com tratamento antifraude
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const senha = document.getElementById('authPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, senha);
+                alert('Autenticação bem-sucedida! Acesso liberado.');
+            } catch (erro) {
+                alert('Acesso negado: Credenciais inválidas.');
+            }
+        });
+
+        // Logout Seguro
+        window.deslogarUsuario = async function() {
+            if(confirm("Deseja fechar a sessão de administrador?")) {
+                await signOut(auth);
+                togglePainel(false);
+            }
+        }
+
+        function renderizarLoja(apps) {
+            const container = document.getElementById('mainAppList');
+            container.innerHTML = '';
+            
+            if(apps.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8; text-align:center; margin-top:20px;">Nenhum app disponível no momento.</p>';
+                return;
+            }
+
+            apps.forEach(app => {
+                container.innerHTML += `
+                    <div class="app-item">
+                        <div class="app-left-content" style="display: flex; align-items: center; flex-grow:1;">
+                            <img class="app-thumbnail" src="${app.imagem}" alt="Ícone">
+                            <div class="app-meta">
+                                <span class="app-title">${app.nome}</span>
+                                <span class="app-dev">${app.dev}</span>
+                                <span class="app-stats">⭐ 5.0 • Verificado</span>
+                            </div>
+                        </div>
+                        <button class="action-button" onclick="window.open('${app.url}', '_blank')">Instalar</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderizarPainel(apps) {
+            const container = document.getElementById('panelAppList');
+            container.innerHTML = '';
+
+            apps.forEach(app => {
+                container.innerHTML += `
+                    <div class="panel-app-item">
+                        <div class="panel-app-left">
+                            <img class="panel-mini-thumb" src="${app.imagem}">
+                            <span>${app.nome}</span>
+                        </div>
+                        <div class="panel-app-actions">
+                            <button class="btn-edit" id="btn-edit-${app.id}">Editar</button>
+                            <button class="btn-delete" id="btn-del-${app.id}">Remover</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            apps.forEach(app => {
+                // Evento Remover
+                document.getElementById(`btn-del-${app.id}`).addEventListener('click', async () => {
+                    if (!isAdminAuthenticated) {
+                        alert("Operação bloqueada: Autenticação ausente.");
+                        return;
+                    }
+                    if(confirm(`Deseja deletar permanentemente "${app.nome}" do banco de dados?`)) {
+                        try {
+                            if(idAppEditando === app.id) cancelarEdicao();
+                            await deleteDoc(doc(db, "aplicativos", app.id));
+                        } catch (err) {
+                            alert("Erro de permissão no Firebase ao excluir documento.");
+                        }
+                    }
+                });
+
+                // Evento Carregar para Edição
+                document.getElementById(`btn-edit-${app.id}`).addEventListener('click', () => {
+                    if (!isAdminAuthenticated) {
+                        alert("Operação bloqueada: Autenticação ausente.");
+                        return;
+                    }
+                    
+                    idAppEditando = app.id;
+                    imagemAtualBase64 = app.imagem;
+                    
+                    document.getElementById('formTitle').innerText = "Editar Aplicativo no Firebase";
+                    document.getElementById('appName').value = app.nome;
+                    document.getElementById('appDev').value = app.dev;
+                    document.getElementById('appUrl').value = app.url;
+                    
+                    document.getElementById('appIconFile').required = false; // Não obrigatório ao editar
+                    document.getElementById('btnSubmitApp').innerText = "Salvar Alterações na Nuvem";
+                    document.getElementById('btnCancelEdit').style.display = "inline-block";
+                    
+                    // Rola a tela suavemente de volta para o formulário
+                    document.getElementById('appForm').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        }
+
+        // Função para cancelar o modo de edição
+        window.cancelarEdicao = function() {
+            idAppEditando = null;
+            imagemAtualBase64 = null;
+            document.getElementById('appForm').reset();
+            document.getElementById('formTitle').innerText = "Postar via Firebase Cloud";
+            document.getElementById('appIconFile').required = true;
+            document.getElementById('btnSubmitApp').innerText = "Enviar para Nuvem Firebase";
+            document.getElementById('btnCancelEdit').style.display = "none";
+        }
+
+        // Gravação / Atualização protegida e higienizada de Aplicativos
+        document.getElementById('appForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!isAdminAuthenticated) {
+                alert("Erro de segurança: Acesso restrito.");
+                return;
+            }
+
+            const nome = document.getElementById('appName').value;
+            const dev = document.getElementById('appDev').value;
+            const urlInput = document.getElementById('appUrl').value;
+            const arquivoFoto = document.getElementById('appIconFile').files[0];
+
+            const salvarDados = async (imagemFinal) => {
+                try {
+                    if (idAppEditando) {
+                        // Modo Edição: Atualiza documento existente
+                        await updateDoc(doc(db, "aplicativos", idAppEditando), {
+                            nome: nome,
+                            dev: dev,
+                            url: urlInput,
+                            imagem: imagemFinal,
+                            atualizadoEm: new Date().toISOString()
+                        });
+                        alert('Aplicativo atualizado com sucesso!');
+                        cancelarEdicao();
+                    } else {
+                        // Modo Criação: Adiciona novo documento
+                        await addDoc(appsCollection, {
+                            nome: nome,
+                            dev: dev,
+                            url: urlInput,
+                            imagem: imagemFinal,
+                            criadoEm: new Date().toISOString()
+                        });
+                        document.getElementById('appForm').reset();
+                        alert('Aplicativo publicado na nuvem com sucesso!');
+                    }
+                } catch (erro) {
+                    alert('Tentativa inválida bloqueada pelas regras do Firebase: ' + erro.message);
+                }
+            };
+
+            if (arquivoFoto) {
+                const leitor = new FileReader();
+                leitor.onload = function(e) {
+                    salvarDados(e.target.result);
+                };
+                leitor.readAsDataURL(arquivoFoto);
+            } else if (idAppEditando && imagemAtualBase64) {
+                // Se está editando e não enviou uma nova foto, mantém a atual
+                salvarDados(imagemAtualBase64);
+            } else {
+                alert("Por favor, selecione um ícone para o aplicativo.");
+            }
+        });
+
+        // --- CONTROLE DE SEGURANÇA E FLUXO DA ABA "FIXAR LOGO" ---
+        const inputLogo = document.getElementById('logoFileInput');
+        const boxSubPanel = document.getElementById('abaLogoContainer');
+        let imagemTemporariaBase64 = null; 
+
+        // Abre a aba interna de gerenciamento do Logo
+        window.abrirAbaLogo = function() {
+            if (!isAdminAuthenticated) return;
+            boxSubPanel.style.display = "flex";
+        }
+
+        // Fecha a aba interna
+        window.fecharAbaLogo = function() {
+            boxSubPanel.style.display = "none";
+            imagemTemporariaBase64 = null;
+            previewLogoImg.src = mainLogoImg.src;
+        }
+
+        // Ação do Botão: Add Logo (Abre a galeria com proteção de estado)
+        window.triggerAddLogo = function() {
+            if (!isAdminAuthenticated) return;
+            inputLogo.click();
+        }
+
+        // Detecta imagem selecionada na galeria
+        inputLogo.addEventListener('change', function() {
+            if (!isAdminAuthenticated) return;
+            const arquivo = this.files[0];
+            if (arquivo) {
+                const leitor = new FileReader();
+                leitor.onload = function(e) {
+                    imagemTemporariaBase64 = e.target.result;
+                    previewLogoImg.src = imagemTemporariaBase64; 
+                };
+                leitor.readAsDataURL(arquivo);
+            }
+        });
+
+        // Ação do Botão: Salvar (Grava na nuvem de forma definitiva e segura)
+        window.salvarNovoLogo = async function() {
+            if (!isAdminAuthenticated) {
+                alert("Ação negada: Você não possui privilégios de gravação.");
+                return;
+            }
+            
+            if (!imagemTemporariaBase64) {
+                alert("Selecione uma imagem da galeria tocando em 'Add Logo' primeiro.");
+                return;
+            }
+
+            try {
+                // Grava com segurança diretamente no banco de dados online do Firebase
+                await setDoc(doc(db, "configuracoes", "layout"), {
+                    logoPrincipal: imagemTemporariaBase64,
+                    atualizadoEm: new Date().toISOString()
+                });
+                
+                alert('✓ Logotipo salvo e FIXADO na nuvem com sucesso!');
+                fecharAbaLogo();
+            } catch (erro) {
+                alert('Erro de segurança ao tentar salvar o logo: ' + erro.message);
+            }
+        }
+    </script>
 </head>
 <body>
 
-<div id="authOverlay">
-    <div class="auth-card">
-        <div class="text-center mb-4">
-            <h3 class="text-white"><i class="bi bi-shield-lock text-success"></i> ITVPlayer</h3>
-            <p class="text-secondary small">Insira suas credenciais para acessar o painel</p>
+    <header>
+        <div class="header-left">
+            <div class="logo-box">
+                <img class="logo-img" id="mainLogoImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="ITV Logo">
+            </div>
+            <div class="brand-text-container">
+                <h1 class="brand-title">ITV</h1>
+                <div class="brand-subtitle">Play Store</div>
+            </div>
         </div>
         
-        <div id="formLogin">
-            <div class="mb-3">
-                <label class="form-label small text-secondary">E-mail</label>
-                <input type="email" id="loginEmail" class="form-control bg-dark text-white border-secondary" placeholder="seu@email.com">            </div>
-            <div class="mb-3">
-                <label class="form-label small text-secondary">Senha</label>
-                <input type="password" id="loginSenha" class="form-control bg-dark text-white border-secondary" placeholder="******">
-            </div>
-            <button class="btn btn-success w-100 bg-lilas border-0" onclick="handleLogin()">Entrar no Sistema</button>
-        </div>
-    </div>
-</div>
-
-<div id="adminLock">
-    <h2>Entre em contato com o ADM</h2>
-    <p>Aplicativo Bloqueado</p>
-    <button class="btn btn-success mb-3" onclick="window.open('https://wa.me/5585996498573')"><i class="bi bi-whatsapp"></i> WhatsApp ADM</button>
-    <input type="password" id="adminPass" class="form-control w-50 mb-2" placeholder="Senha">
-    <button class="btn btn-primary" onclick="unlockApp()">Desbloquear</button>
-</div>
-
-<div id="mySidenav" class="menu-lateral">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <div class="p-3">
-        <label>Msg Cobrança:</label>
-        <textarea id="cfgMsg" class="form-control mb-2"></textarea>
-        <label>Painel 1 (CENTRAL):</label>
-        <input type="text" id="url1" class="form-control mb-2">
-        <label>Painel 2 (WAREZ):</label>
-        <input type="text" id="url2" class="form-control mb-2">
-        <label>Painel 3 (ZEUS):</label>
-        <input type="text" id="url3" class="form-control mb-2">
-        <button class="btn btn-info w-100 mt-3" onclick="saveSettings()">Salvar Configurações</button>
-        <button class="btn btn-danger w-100 mt-5" onclick="handleLogout()">Sair da Conta</button>
-    </div>
-</div>
-
-<nav class="navbar sticky-top">
-    <div class="container-fluid d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center">
-            <button class="btn text-white me-2" onclick="openNav()"><i class="bi bi-list fs-3"></i></button>
-            <div class="d-flex flex-column">
-                <span class="navbar-brand mb-0 h1 text-white lh-1">ITV Clientes 2.0</span>
-                <small id="userEmailDisplay" class="text-secondary style" style="font-size: 0.75rem;"></small>
+        <div class="header-actions">
+            <button class="btn-auth-top" id="btnAuthTop" onclick="togglePainel(true)">LOGIN</button>
+            <div id="logoutContainer" style="display: none;">
+                <button class="btn-logout" onclick="deslogarUsuario()">✕</button>
             </div>
         </div>
-        <!-- Margem à direita adicionada para o botão gráfico não sobrepor o botão de adicionar -->
-        <div style="margin-right: 50px;">
-            <button class="btn btn-outline-info me-2" onclick="toggleAdminPanel()"><i class="bi bi-graph-up"></i></button>
+    </header>
+
+    <div class="search-box">
+        <span>🔍 Buscar aplicativos verificados...</span>
+    </div>
+
+    <main class="store-container">
+        <div class="category-header">
+            <h2>Seus Aplicativos Publicados</h2>
         </div>
-    </div>
-    <!-- Botão posicionado no lado direito superior de forma fixa -->
-    <button class="btn btn-add-fixo" onclick="showModalCadastro()"><i class="bi bi-plus-lg"></i></button></nav>
-
-<div class="container mt-3">
-    
-    <div id="adminPanel" style="display: none;" class="mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4><i class="bi bi-cash-stack text-success"></i> Gestão Financeira</h4>
-            <input type="month" id="filterMes" class="form-control w-auto bg-dark text-white border-secondary" onchange="renderFinanceiro()">
-        </div>
-        <div class="row g-2">
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro">
-                    <div class="stat-label">Recebido (Mês)</div>
-                    <div class="stat-val" id="finRecebido">R$ 0,00</div>
-                </div>
+        <div class="apps-vertical-stack" id="mainAppList">
             </div>
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro" style="border-left-color: #ffc107;">
-                    <div class="stat-label">A Receber</div>
-                    <div class="stat-val text-warning" id="finPendente">R$ 0,00</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro" style="border-left-color: #0dcaf0;">
-                    <div class="stat-label">Total Clientes</div>
-                    <div class="stat-val text-info" id="finTotalClientes">0</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro" style="border-left-color: #00ff00;">
-                    <div class="stat-label">Lucro Geral</div>
-                    <div class="stat-val" id="finGeral" style="color: #00ff00;">R$ 0,00</div>
-                </div>
-            </div>
-        </div>
-        <hr class="border-secondary">
-    </div>
+    </main>
 
-    <input type="text" id="search" class="form-control bg-dark text-white border-secondary mb-3" placeholder="Buscar cliente..." onkeyup="renderClientes()">
-
-    <div class="d-flex mb-3">
-        <button class="btn-small bg-primary" onclick="filterData('ativos')">ATIVOS (<span id="countAtivos">0</span>)</button>
-        <button class="btn-small" style="background-color: orange;" onclick="filterData('vencer')">A VENCER (<span id="countVencer">0</span>)</button>
-        <button class="btn-small bg-danger" onclick="filterData('expirados')">EXPIRADOS (<span id="countExp">0</span>)</button>
-        <button class="btn-small bg-info" onclick="filterData('apagar')">A PAGAR (<span id="countPagar">0</span>)</button>
-        <button class="btn-small bg-secondary" onclick="filterData('deletados')">LIXO (<span id="countDel">0</span>)</button>
-    </div>
-
-    <div class="d-flex gap-2 mb-4">
-        <button class="btn btn-outline-light btn-sm w-100" onclick="accessPanel(1)">CENTRAL</button>        <button class="btn btn-outline-light btn-sm w-100" onclick="accessPanel(2)">WAREZ</button>
-        <button class="btn btn-outline-light btn-sm w-100" onclick="accessPanel(3)">ZEUS</button>
-    </div>
-
-    <div id="listaClientes"></div>
-</div>
-
-<div class="modal fade" id="modalCadastro" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-body">
-                <input type="hidden" id="editId">
-                <label class="small text-secondary">Nome do Cliente:</label>
-                <input type="text" id="cNome" class="form-control mb-2" placeholder="Nome">
-                <input type="text" id="cUser" class="form-control mb-2" placeholder="Usuário">
-                <input type="text" id="cPass" class="form-control mb-2" placeholder="Senha">
-                <label class="small text-secondary">Valor da Mensalidade:</label>
-                <input type="number" id="cValor" class="form-control mb-2" placeholder="00,00" step="0.01">
-                <label class="small text-secondary">Data de Vencimento:</label>
-                <input type="date" id="cData" class="form-control mb-2">
-                <input type="text" id="cServ" class="form-control mb-2" placeholder="Servidor">
-                <input type="text" id="cUrl" class="form-control mb-2" placeholder="URL">
-                <input type="text" id="cTel" class="form-control mb-2" placeholder="Celular: +55(xx)xxxxx-xxxx">
-                <textarea id="cObs" class="form-control mb-2" placeholder="Observações"></textarea>
-                <button class="btn btn-success w-100" onclick="saveCliente()">Salvar Cliente</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<script>
-    // Configurações fornecidas do Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDd_rtYsto9_0zp8pxYwXRs4XRRip7k3uc",
-      authDomain: "itvcontrol.firebaseapp.com",
-      projectId: "itvcontrol",
-      storageBucket: "itvcontrol.firebasestorage.app",
-      messagingSenderId: "291731890067",
-      appId: "1:291731890067:web:e75e79766765d861db5266"
-    };
-
-    // Inicializando Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();    const db = firebase.firestore();
-
-    let clientes = [];
-    let config = { msg: "", p1: "", p2: "", p3: "" };
-    let isUnlocked = true; 
-    let currentFilter = 'ativos';
-    let usuarioLogadoUid = null;
-
-    document.getElementById('filterMes').value = new Date().toISOString().slice(0, 7);
-
-    // ============================================
-    // === FUNÇÃO UTILITÁRIA: FORMATAR MOEDA BR ===
-    // ============================================
-    function formatCurrencyBR(value) {
-        if (value === null || value === undefined || value === '') return 'R$ 0,00';
-        const num = parseFloat(value);
-        if (isNaN(num)) return 'R$ 0,00';
-        return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
-
-    // Formata data para padrão brasileiro DD/MM/AAAA
-    function formatDateBR(dateString) {
-        if (!dateString) return '';
-        let parts;
-        if (dateString instanceof Date) {
-            const d = dateString;
-            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-        }
-        if (dateString.includes('-')) {
-            parts = dateString.split('-');
-        } else if (dateString.includes('/')) {
-            parts = dateString.split('/');
-        } else {
-            return dateString;
-        }
-        if (parts.length === 3) {
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        }
-        return dateString;
-    }
-
-    // Converte data BR para ISO (uso interno no Firebase)
-    function parseDateBRtoISO(dateBR) {
-        if (!dateBR) return '';
-        const parts = dateBR.split('/');
-        if (parts.length === 3) {
-            return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-        return dateBR;
-    }    // ============================================
-
-    // Monitoramento do Estado de Login em Tempo Real
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            usuarioLogadoUid = user.uid;
-            document.getElementById('userEmailDisplay').innerText = user.email || "";
-            document.getElementById('authOverlay').style.display = 'none';
-            syncConfigELoadClientes();
-        } else {
-            usuarioLogadoUid = null;
-            document.getElementById('userEmailDisplay').innerText = "";
-            document.getElementById('authOverlay').style.display = 'flex';
-            document.getElementById('adminLock').style.display = 'none';
-        }
-    });
-
-    function handleLogin() {
-        const email = document.getElementById('loginEmail').value.trim();
-        const senha = document.getElementById('loginSenha').value.trim();
-        if(!email || !senha) return alert("Preencha todos os campos!");
-
-        auth.signInWithEmailAndPassword(email, senha)
-            .catch(err => alert("Erro ao entrar: " + err.message));
-    }
-
-    function handleLogout() {
-        auth.signOut().then(() => {
-            closeNav();
-        });
-    }
-
-    // Carregamento de Configurações e Clientes Baseados no Usuário Logado
-    function syncConfigELoadClientes() {
-        if(!usuarioLogadoUid) return;
-
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("config").doc("geral")
-        .onSnapshot(doc => {
-            if(doc.exists) {
-                config = doc.data();
-                document.getElementById('cfgMsg').value = config.msg || "";
-                document.getElementById('url1').value = config.p1 || "";
-                document.getElementById('url2').value = config.p2 || "";
-                document.getElementById('url3').value = config.p3 || "";
-            }
-        });
-
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes")
-        .onSnapshot(snapshot => {
-            clientes = [];            snapshot.forEach(doc => {
-                clientes.push({ id: doc.id, ...doc.data() });
-            });
-            checkLock();
-            renderClientes();
-        });
-    }
-
-    function checkLock() {
-        document.getElementById('adminLock').style.display = 'none';
-    }
-
-    function toggleAdminPanel() {
-        const panel = document.getElementById('adminPanel');
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        if(panel.style.display === 'block') renderFinanceiro();
-    }
-
-    function unlockApp() {
-        isUnlocked = true;
-        localStorage.setItem('itv_unlocked', 'true');
-        document.getElementById('adminLock').style.display = 'none';
-    }
-
-    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
-    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-
-    function saveSettings() {
-        if(!usuarioLogadoUid) return;
-        config = {
-            msg: document.getElementById('cfgMsg').value,
-            p1: document.getElementById('url1').value,
-            p2: document.getElementById('url2').value,
-            p3: document.getElementById('url3').value
-        };
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("config").doc("geral").set(config)
-            .then(() => closeNav())
-            .catch(err => alert("Erro ao salvar: " + err.message));
-    }
-
-    function showModalCadastro(id = "") {
-        if(id === "") {
-            document.getElementById('editId').value = "";
-            document.getElementById('cNome').value = "";
-            document.getElementById('cUser').value = "";
-            document.getElementById('cPass').value = "";
-            document.getElementById('cValor').value = "";
-            document.getElementById('cData').value = "";
-            document.getElementById('cServ').value = "";
-            document.getElementById('cUrl').value = "";            document.getElementById('cTel').value = "";
-            document.getElementById('cObs').value = "";
-        } else {
-            const c = clientes.find(item => item.id === id);
-            if(c) {
-                document.getElementById('editId').value = c.id;
-                document.getElementById('cNome').value = c.nome || "";
-                document.getElementById('cUser').value = c.user || "";
-                document.getElementById('cPass').value = c.pass || "";
-                document.getElementById('cValor').value = c.valor !== undefined ? c.valor : "";
-                document.getElementById('cData').value = c.data || "";
-                document.getElementById('cServ').value = c.serv || "";
-                document.getElementById('cUrl').value = c.url || "";
-                document.getElementById('cTel').value = c.tel || "";
-                document.getElementById('cObs').value = c.obs || "";
-            }
-        }
-        new bootstrap.Modal(document.getElementById('modalCadastro')).show();
-    }
-
-    function saveCliente() {
-        if(!usuarioLogadoUid) return;
-        const id = document.getElementById('editId').value;
-        const valorRaw = document.getElementById('cValor').value;
-        // Converte valor para número (aceita vírgula ou ponto)
-        const valorNum = parseFloat(valorRaw.replace(',', '.')) || 0;
+    <div class="panel-tab" id="panelTab">
         
-        const novo = {
-            nome: document.getElementById('cNome').value,
-            user: document.getElementById('cUser').value,
-            pass: document.getElementById('cPass').value,
-            valor: valorNum,
-            data: document.getElementById('cData').value,
-            serv: document.getElementById('cServ').value,
-            url: document.getElementById('cUrl').value,
-            tel: document.getElementById('cTel').value,
-            obs: document.getElementById('cObs').value,
-            status: 'ativo'
-        };
+        <div class="panel-header-block">
+            <div class="panel-header-top">
+                <h2 class="panel-title">Painel Seguro ITV</h2>
+                <button class="btn-close-panel" onclick="togglePainel(false)">Voltar à Loja</button>
+            </div>
+        </div>
 
-        const modalEl = document.getElementById('modalCadastro');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-
-        if(id === "") {
-            db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").add(novo)
-                .then(() => modalInstance.hide());
-        } else {
-            const index = clientes.findIndex(c => c.id === id);
-            novo.status = clientes[index].status;
-            db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").doc(id).set(novo)                .then(() => modalInstance.hide());
-        }
-    }
-
-    function renderFinanceiro() {
-        const mesSelecionado = document.getElementById('filterMes').value; 
-        let received = 0;
-        let pending = 0;
-        let totalGeneral = 0;
-        let totalActive = 0;
-
-        clientes.forEach(c => {
-            if(c.status !== 'deletado') {
-                const val = parseFloat(c.valor) || 0;
-                totalGeneral += val;
-                totalActive++;
+        <div id="authSection" style="display: flex; flex-direction: column; gap: 15px;">
+            <form class="panel-form" id="loginForm">
+                <h3 style="color: #fff; margin-bottom: 5px;">Área Restrita</h3>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px;">Autentique-se para liberar os privilégios de gravação.</p>
                 
-                if(c.data && c.data.startsWith(mesSelecionado)) {
-                    if(c.status === 'ativo' || c.status === 'vencer' || c.status === 'expirado') {
-                        received += val;
-                    } else if(c.status === 'apagar') {
-                        pending += val;
-                    }
-                }
-            }
-        });
-
-        document.getElementById('finRecebido').innerText = formatCurrencyBR(received);
-        document.getElementById('finPendente').innerText = formatCurrencyBR(pending);
-        document.getElementById('finTotalClientes').innerText = totalActive;
-        document.getElementById('finGeral').innerText = formatCurrencyBR(totalGeneral);
-    }
-
-    function openWhatsApp(id) {
-        const c = clientes.find(item => item.id === id);
-        if(c && c.tel) {
-            const num = c.tel.replace(/\D/g,'');
-            window.open(`https://wa.me/${num}`);
-        } else {
-            alert("Número de telefone não cadastrado!");
-        }
-    }
-
-    // === FUNÇÕES PARA RENOVAÇÃO ===
-    function toggleRenewButtons(id) {
-        const opts = document.getElementById(`renewOpts-${id}`);
-        if(opts) {
-            opts.classList.toggle('show');
-        }
-    }
-    function handleRenewal(id, tipo) {
-        if(!usuarioLogadoUid) return;
-        const index = clientes.findIndex(item => item.id === id);
-        if(index === -1) return;
-
-        const dataAtual = new Date(clientes[index].data);
-        dataAtual.setMonth(dataAtual.getMonth() + 1);
-        const novaDataStr = dataAtual.toISOString().split('T')[0];
-        
-        let novoStatus = tipo === 'renovar' ? 'ativo' : 'apagar';
-        
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").doc(id).update({
-            data: novaDataStr,
-            status: novoStatus
-        }).then(() => {
-            sendRenewalMessage(id, tipo);
-        });
-    }
-
-    function handlePagoApenas(id) {
-        if(!usuarioLogadoUid) return;
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").doc(id).update({
-            status: 'ativo'
-        }).then(() => {
-            sendRenewalMessage(id, 'pago');
-        });
-    }
-
-    function sendRenewalMessage(id, tipo) {
-        const c = clientes.find(item => item.id === id);
-        if(!c) return;
-        
-        const novaData = new Date();
-        novaData.setMonth(novaData.getMonth() + 1);
-        const dataFormat = novaData.toLocaleDateString('pt-BR');
-        
-        let msg = "";
-        
-        if(tipo === 'renovar' || tipo === 'pago') {
-            msg = `✅ *PAGAMENTO CONFIRMADO!*\n\nNome: ${c.nome}\nPlano: ${formatCurrencyBR(c.valor)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nPróximo vencimento: ${dataFormat}\n\nDivirta-se!`;
-        } else if(tipo === 'aReceber') {
-            msg = `⛔️ *PAGAMENTO NÃO CONFIRMADO!*\n\nNome: ${c.nome}\nPlano: ${formatCurrencyBR(c.valor)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${formatDateBR(c.data)}\n\nEntre em contato para regularizar!`;
-        }
-        
-        const num = c.tel ? c.tel.replace(/\D/g,'') : '';
-        if(num) {
-            window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`);
-        } else {
-            alert("Número de telefone não cadastrado!");        }
-    }
-    // === FIM FUNÇÕES RENOVAÇÃO ===
-
-    function renderClientes() {
-        const lista = document.getElementById('listaClientes');
-        const search = document.getElementById('search').value.toLowerCase();
-        lista.innerHTML = "";
-        
-        let counts = { ativos: 0, vencer: 0, exp: 0, apagar: 0, del: 0 };
-        const hoje = new Date();
-
-        clientes.forEach((c) => {
-            const dataVenc = new Date(c.data);
-            const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));
-            
-            let statusReal = c.status;
-            if(c.status !== 'deletado' && c.status !== 'apagar') {
-                if(diffDays < 0) statusReal = 'expirado';
-                else if(diffDays <= 3) statusReal = 'vencer';
-                else statusReal = 'ativo';
-            }
-
-            if(statusReal === 'ativo') counts.ativos++;
-            if(statusReal === 'vencer') counts.vencer++;
-            if(statusReal === 'expirado') counts.exp++;
-            if(c.status === 'apagar') counts.apagar++;
-            if(c.status === 'deletado') counts.del++;
-
-            if(currentFilter === 'ativos' && (statusReal === 'deletado' || statusReal === 'expirado' || statusReal === 'apagar')) return;
-            if(currentFilter === 'vencer' && statusReal !== 'vencer') return;
-            if(currentFilter === 'expirados' && statusReal !== 'expirado') return;
-            if(currentFilter === 'apagar' && c.status !== 'apagar') return;
-            if(currentFilter === 'deletados' && c.status !== 'deletado') return;
-            
-            if(!c.nome.toLowerCase().includes(search)) return;
-
-            // Lógica dos botões conforme categoria
-            let botaoRenovacao = '';
-            if(currentFilter === 'apagar') {
-                botaoRenovacao = `<button class="btn btn-sm btn-success renew-action-btn" onclick="handlePagoApenas('${c.id}')">PAGO</button>`;
-            } else {
-                botaoRenovacao = `
-                    <div class="d-flex align-items-center gap-1">
-                        <button class="btn btn-sm btn-primary renew-toggle-btn" onclick="toggleRenewButtons('${c.id}')">RENOVAR</button>
-                        <div id="renewOpts-${c.id}" class="renew-options">
-                            <button class="btn btn-sm btn-success renew-action-btn" onclick="handleRenewal('${c.id}', 'renovar')">RENOVAR</button>
-                            <button class="btn btn-sm btn-warning renew-action-btn" onclick="handleRenewal('${c.id}', 'aReceber')">A RECEBER</button>
-                        </div>
-                    </div>                `;
-            }
-
-            const dataExibicao = formatDateBR(c.data);
-            const valorExibicao = formatCurrencyBR(c.valor);
-
-            lista.innerHTML += `
-                <div class="card-cliente">
-                    <div class="d-flex justify-content-between">
-                        <h5>${c.nome}</h5>
-                        <span class="badge ${statusReal === 'expirado' ? 'bg-danger' : (statusReal === 'vencer' ? 'bg-warning' : 'bg-success')}">${dataExibicao}</span>
-                    </div>
-                    <p class="small mb-2">User: ${c.user} | Valor: <strong>${valorExibicao}</strong></p>
-                    <div class="d-flex flex-wrap gap-1">
-                        <button class="btn btn-sm btn-success" onclick="sendZap('${c.id}', 'cobranca')">COBRAR</button>
-                        ${botaoRenovacao}
-                        <button class="btn btn-sm" style="background-color: #25D366; color: white;" onclick="openWhatsApp('${c.id}')"><i class="bi bi-whatsapp"></i></button>
-                        <button class="btn btn-sm bg-lilas" onclick="editCliente('${c.id}')"><i class="bi bi-pencil"></i></button>
-                        ${c.status === 'deletado' ? 
-                            `<button class="btn btn-sm btn-info" onclick="restore('${c.id}')">RESTAURAR</button>
-                             <button class="btn btn-sm btn-danger" onclick="hardDelete('${c.id}')">EXCLUIR</button>` : 
-                            `<button class="btn btn-sm btn-danger" onclick="softDelete('${c.id}')"><i class="bi bi-trash"></i></button>`
-                        }
-                    </div>
+                <div class="form-group">
+                    <label>E-mail Administrativo</label>
+                    <input type="email" id="authEmail" placeholder="seu-email@itv.com" required>
                 </div>
-            `;
-        });
 
-        document.getElementById('countAtivos').innerText = counts.ativos;
-        document.getElementById('countVencer').innerText = counts.vencer;
-        document.getElementById('countExp').innerText = counts.exp;
-        document.getElementById('countPagar').innerText = counts.apagar;
-        document.getElementById('countDel').innerText = counts.del;
-        renderFinanceiro();
-    }
+                <div class="form-group">
+                    <label>Senha Antifraude</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" required>
+                </div>
 
-    function sendZap(id, tipo) {
-        const c = clientes.find(item => item.id === id);
-        if(!c) return;
-        let msg = "";
-        const novaData = new Date();
-        novaData.setMonth(novaData.getMonth() + 1);
-        const dataFormat = novaData.toLocaleDateString('pt-BR');
-        const valorFormatado = formatCurrencyBR(c.valor);
+                <button type="submit" class="btn-submit-auth">Desbloquear Painel</button>
+            </form>
+        </div>
 
-        if(tipo === 'cobranca') {
-            msg = `📩 𝕞𝕤𝕘-𝕒𝕦𝕥𝕠𝕞á𝕥𝕚𝕔𝕒📩\n🚨🚨🚨🚨🚨🚨🚨🚨\n\nOla ${c.nome}!!\nSou o assistente virtual da ITVplayer 🤖\n\nSua lista de\nTV, FILMES & SÉRIES\nexpirou ${formatDateBR(c.data)}\n\nPara renovar Faz um Pix 💠\n💰Plano Familia: ${valorFormatado}\n${config.msg || ""}`;
-        } else if(tipo === 'pago') {
-            msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: ${valorFormatado}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${dataFormat}\n\nDivirta-se!!`;
-        } else {            msg = `⛔️𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 ℕ𝔸𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: ${valorFormatado}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${formatDateBR(c.data)}\n\nDivirta-se!!`;
-        }
-        
-        window.open(`https://wa.me/${c.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`);
-    }
+        <div id="adminSection" style="display: none;">
+            <div style="margin-bottom: 25px; display: flex; flex-direction: column; gap: 10px;">
+                <p style="color: #22c55e; font-size: 0.9rem; font-weight: bold;">✓ Autenticação de Segurança Ativa</p>
+                
+                <button class="btn-change-logo" onclick="abrirAbaLogo()">🖼️ FIXAR LOGO</button>
+                <input type="file" id="logoFileInput" accept="image/*" style="display: none;">
+            </div>
 
-    function updateStatus(id, acao) {
-        if(!usuarioLogadoUid) return;
-        const index = clientes.findIndex(item => item.id === id);
-        if(index === -1) return;
+            <div class="sub-panel-box" id="abaLogoContainer">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="color: #38bdf8; font-size: 1rem;">Configurar Logotipo Principal</h4>
+                    <span style="cursor:pointer; color:#ef4444; font-weight:bold; font-size:1.1rem;" onclick="fecharAbaLogo()">✕</span>
+                </div>
+                
+                <div class="logo-preview-container">
+                    <img class="logo-preview-img" id="previewLogoImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Previa">
+                    <span style="color: #94a3b8; font-size: 0.8rem;">Visualização do logotipo selecionado</span>
+                </div>
 
-        const dataAtual = new Date(clientes[index].data);
-        dataAtual.setMonth(dataAtual.getMonth() + 1);
-        const novaDataStr = dataAtual.toISOString().split('T')[0];
-        
-        let novoStatus = acao === 'pago' ? 'ativo' : 'apagar';
-        
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").doc(id).update({
-            data: novaDataStr,
-            status: novoStatus
-        }).then(() => {
-            sendZap(id, acao);
-        });
-    }
+                <div class="sub-panel-actions">
+                    <button class="btn-sub-add" onclick="triggerAddLogo()">+ Add Logo</button>
+                    <button class="btn-sub-save" onclick="salvarNovoLogo()">Salvar</button>
+                </div>
+            </div>
 
-    function filterData(f) { currentFilter = f; renderClientes(); }
-    
-    function softDelete(id) { 
-        if(!usuarioLogadoUid) return;
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").doc(id).update({ status: 'deletado' }); 
-    }
-    function restore(id) { 
-        if(!usuarioLogadoUid) return;
-        db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").doc(id).update({ status: 'ativo' }); 
-    }
-    function hardDelete(id) { 
-        if(!usuarioLogadoUid) return;
-        if(confirm("Excluir permanentemente do Firebase?")) { 
-            db.collection("usuarios").doc(usuarioLogadoUid).collection("clientes").doc(id).delete();
-        } 
-    }
-    
-    function accessPanel(n) { const url = config['p'+n]; if(url) window.open(url); else alert("Cadastre a URL no menu lateral"); }
+            <form class="panel-form" id="appForm">
+                <h3 style="color: #fff; margin-bottom: 5px;" id="formTitle">Postar via Firebase Cloud</h3>
+                
+                <div class="form-group">
+                    <label>Nome do Aplicativo</label>
+                    <input type="text" id="appName" placeholder="Ex: ITV Filmes HD" required>
+                </div>
 
-    function editCliente(id) {
-        showModalCadastro(id);
-    }
-</script>
+                <div class="form-group">
+                    <label>Desenvolvedor / Empresa</label>
+                    <input type="text" id="appDev" placeholder="Ex: ITV Medias" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Ícone do App (Foto da Galeria)</label>
+                    <input type="file" id="appIconFile" accept="image/*" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Endereço URL de Download/Instalação</label>
+                    <input type="url" id="appUrl" placeholder="https://exemplo.com/app.apk" required>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-submit-app" id="btnSubmitApp" style="flex: 1;">Enviar para Nuvem Firebase</button>
+                    <button type="button" class="btn-close-panel" id="btnCancelEdit" onclick="cancelarEdicao()" style="display: none; background-color: #ef4444;">Cancelar</button>
+                </div>
+            </form>
+
+            <h3 style="color: #fff; margin-bottom: 12px;">Gerenciar Banco de Dados</h3>
+            <div class="panel-app-list" id="panelAppList">
+                </div>
+        </div>
+
+    </div>
+
+    <nav class="nav-bar-bottom">
+        <a href="#" class="nav-link current"><span>📱</span><span>Apps</span></a>
+        <a href="#" class="nav-link"><span>🎮</span><span>Jogos</span></a>
+        <a href="#" class="nav-link" onclick="togglePainel(true)"><span>⚙️</span><span>Painel</span></a>
+    </nav>
+
 </body>
 </html>
